@@ -4,12 +4,20 @@
 PROJECT_NAME="{{PROJECT_NAME}}"
 
 # Binarios que deben existir en PATH
-REQUIRED_TOOLS=("node" "pnpm")
+# node es necesario para las verificaciones de feature_list.json en init.sh
+REQUIRED_TOOLS=("node")
 
 # Variables de entorno críticas, ej: ("DATABASE_URL" "JWT_SECRET")
 REQUIRED_ENV_VARS=()
 
-INSTALL_CMD="pnpm install --silent"
-BUILD_CMD="pnpm run build"
-TEST_CMD="pnpm test -- --passWithNoTests"
-LINT_CMD=""    # vacío = saltar
+# Comandos del stack. Vacío = saltar con aviso. Rellenar cuando el proyecto
+# tenga manifest. Ejemplo NestJS/pnpm:
+#   REQUIRED_TOOLS=("node" "pnpm")
+#   INSTALL_CMD="pnpm install"
+#   BUILD_CMD="pnpm run build"
+#   TEST_CMD="pnpm test -- --passWithNoTests"
+#   LINT_CMD="pnpm run lint"
+INSTALL_CMD=""
+BUILD_CMD=""
+TEST_CMD=""
+LINT_CMD=""
