@@ -37,6 +37,45 @@ pending → spec_ready → in_progress → done
 
 ---
 
+## Schema de una entrada en feature_list.json
+
+Cada elemento del array es un objeto con estos campos:
+
+| Campo | Tipo | Obligatorio | Significado |
+|---|---|---|---|
+| `id` | number | sí | Identificador único, estable, no se reutiliza |
+| `name` | string | sí | Slug usado como nombre de carpeta en `specs/<name>/` |
+| `status` | string | sí | Uno de: `pending`, `spec_ready`, `in_progress`, `done` |
+| `priority` | string | no | Valor libre (ej: `P1`/`P2`/`P3` o `alta`/`media`/`baja`) — elegir una convención por proyecto y mantenerla |
+| `description` | string | no | Resumen de qué hace la feature; usado por `spec_author` como contexto inicial |
+| `acceptance_criteria` | string[] | no | Lista de criterios en lenguaje natural; `spec_author` los traduce a requisitos EARS |
+| `files_affected` | string[] | no | Rutas o módulos que probablemente toque la feature; pista para `explorer`/`spec_author`, no una restricción dura |
+
+Ejemplo:
+
+```json
+{
+  "id": 1,
+  "name": "user-auth",
+  "status": "pending",
+  "priority": "P1",
+  "description": "Permitir login con email y password",
+  "acceptance_criteria": [
+    "Usuario puede loguearse con credenciales válidas",
+    "Sistema rechaza credenciales inválidas con 401"
+  ],
+  "files_affected": [
+    "src/modules/auth/"
+  ]
+}
+```
+
+Solo `id`, `name` y `status` son leídos por `init.sh`. El resto es contexto
+opcional para `spec_author` — vale la pena rellenarlo cuando ya se sabe, pero
+no bloquea nada si falta.
+
+---
+
 ## Cómo se crea la spec de una feature nueva
 
 ```
