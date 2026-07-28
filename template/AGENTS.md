@@ -83,6 +83,10 @@ implementar. Ningún agente se auto-aprueba la spec.
 - **Deja el repositorio limpio** antes de cerrar la sesión (ver §6).
 - **Si no sabes cómo se hace algo en este proyecto, busca en `docs/`** antes de inventarlo.
   Si no está en docs/, sigue el patrón del módulo más similar en el código existente.
+- **Toda variable de entorno nueva se documenta en el mismo cierre que la
+  introduce.** Añádela a `docs/conventions.md` (tabla "Variables de
+  entorno") y a `.env.example` si el proyecto usa uno — no la dejes para
+  "después"; después es cuando se te olvida.
 
 ---
 

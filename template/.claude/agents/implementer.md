@@ -55,6 +55,8 @@ del actual.
 - [ ] Sin `TODO` sin contexto
 - [ ] El código respeta las capas de `docs/architecture.md` (domain sin
       imports de infrastructure, application depende solo de interfaces)
+- [ ] Si esta feature introduce una variable de entorno nueva, está en
+      `docs/conventions.md` y en `.env.example` (si el proyecto usa uno)
 
 ---
 
