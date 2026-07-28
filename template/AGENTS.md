@@ -34,7 +34,7 @@ duplica.
 
 | Archivo / carpeta | Qué contiene | Cuándo leerlo |
 |---|---|---|
-| `feature_list.json` | Lista de features con estado (pending / spec_ready / in_progress / done) | Siempre, al empezar |
+| `feature_list.json` | Lista de features con estado (pending / spec_ready / in_progress / done) — schema de cada entrada en `docs/specs.md` §Schema | Siempre, al empezar |
 | `specs/<feature>/` | Spec SDD de una feature: requirements, design, tasks, traceability | Antes de implementar esa feature |
 | `progress/current.md` | Estado de la sesión actual | Siempre, al empezar |
 | `progress/history.md` | Bitácora append-only de sesiones anteriores | Si necesitas contexto histórico |
