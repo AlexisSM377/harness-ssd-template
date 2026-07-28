@@ -23,7 +23,7 @@ variaciones en los proyectos propios `Sistema-Reservas` y `Tracker-Sales-OS`.
 | 2 | Clean Architecture | `template/docs/architecture.md` |
 | 3 | Integración con Obsidian | `template/docs/obsidian.md`, frontmatter + wikilinks en `specs/` y `progress/` |
 | 4 | Coordinación multi-IA | `template/AGENTS.md` (entrada canónica), `template/CLAUDE.md` (wrapper para Claude Code) |
-| 5 | Jerarquía de agentes/skills | `template/.claude/agents/` (leader, spec_author, explorer, implementer, reviewer) |
+| 5 | Jerarquía de agentes/skills | `template/.claude/agents/` (5 roles fijos) + `template/.claude/skills/` (convención plana, ver su README) |
 | 6 | Disciplina TDD | `template/docs/verification.md`, `template/specs/_template/tasks.md` |
 | 7 | Trazabilidad Requisito→Test→Commit | `template/specs/_template/traceability.md`, `template/CHECKPOINTS.md` (C4, C5) |
 | 8 | Automatización `init.sh` | `template/init.sh` + `template/init.config.sh` (comandos del proyecto) |
@@ -115,6 +115,17 @@ impone ningún hook. Un hook útil y opcional para este harness es correr
 No se incluye por defecto para no forzar un comportamiento que puede no
 encajar con todos los flujos de trabajo (ej: sesiones que no quieren correr
 build/tests en cada arranque).
+
+---
+
+## Skills opcionales
+
+`template/.claude/skills/` se instala con la convención documentada en
+`template/.claude/skills/README.md` y un único ejemplo
+(`docs-readme-sync`). Claude Code sólo autodetecta skills a un nivel de
+profundidad bajo `skills/` — por eso la convención es plana con prefijo de
+track (`<track>-<nombre>/SKILL.md`), no carpetas anidadas por categoría.
+Añade las skills reales del proyecto siguiendo ese patrón.
 
 ---
 

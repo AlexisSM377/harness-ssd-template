@@ -45,6 +45,7 @@ duplica.
 | `docs/obsidian.md` | Cómo usar este proyecto como vault de Obsidian | Si usas Obsidian para navegar el proyecto |
 | `CHECKPOINTS.md` | Criterios objetivos de "estado final correcto" (C1..C6) | Para auto-evaluarte |
 | `.claude/agents/` | Definiciones de subagentes (leader, spec_author, explorer, implementer, reviewer) | Si orquestas trabajo |
+| `.claude/skills/` | Skills reutilizables, un nivel plano (`<track>-<nombre>/SKILL.md`) — ver `.claude/skills/README.md` | Antes de repetir una tarea ya resuelta en otro proyecto |
 | `init.config.sh` | Comandos de build/test/lint específicos de este proyecto | Antes de correr `init.sh` por primera vez |
 | ver `docs/architecture.md` | Dónde vive el código de la aplicación y cómo se organiza | Para implementar |
 
