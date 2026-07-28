@@ -62,6 +62,18 @@
 
 ---
 
+## C7 — Ninguna feature deja código huérfano de una que reemplaza
+
+- [ ] Si esta feature reemplaza o vuelve obsoleto un componente/módulo de una
+      feature anterior (UI, use-case, endpoint), ese código viejo fue
+      eliminado en el mismo cierre — no se dejó "por si acaso"
+- [ ] Los tests del código eliminado también se eliminaron (no quedan
+      `.spec`/`.test` de un archivo que ya no existe)
+- [ ] `grep`/búsqueda de importadores del módulo reemplazado no devuelve
+      resultados fuera de su propio archivo de test (que también se elimina)
+
+---
+
 **Cómo usar este archivo:**
 El agente `reviewer` recorre cada checkbox relevante a la feature trabajada,
-marca `[x]` o `[ ]`, y rechaza el cierre si queda alguno vacío en C1–C6.
+marca `[x]` o `[ ]`, y rechaza el cierre si queda alguno vacío en C1–C7.

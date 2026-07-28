@@ -111,3 +111,8 @@ Luego devuelve al leader **solo**: `"done → progress/impl_<feature-name>.md"`
 
 ❌ Entidades de domain que importan tipos o decoradores de la capa de
    infraestructura (ORM, framework HTTP).
+
+❌ Dejar componentes, use-cases o endpoints huérfanos cuando esta feature
+   reemplaza a los de una feature anterior — bórralos en el mismo cierre,
+   junto con sus tests. "Podría servir después" no es razón para no
+   borrarlos: `git log` los recupera si hace falta.

@@ -48,6 +48,8 @@ Marca cada ítem relevante:
 - C4 (TDD: tests nombran R-ids) — siempre
 - C5 (trazabilidad sin filas pendientes) — siempre
 - C6 (spec aprobada) — siempre
+- C7 (sin código huérfano de una feature reemplazada) — siempre que la spec
+  o el reporte del implementer mencionen reemplazar/deprecar algo existente
 
 ---
 
@@ -80,6 +82,11 @@ Veredicto: APROBADO / RECHAZADO
 
 ## Checklist C6 — Spec aprobada
 - [x] / [ ] requirements.md con status: approved y casilla humana marcada
+
+## Checklist C7 — Sin código huérfano
+- [x] / [ ] Componentes/módulos reemplazados por esta feature fueron eliminados
+- [x] / [ ] Sus tests también fueron eliminados
+- [ ] N/A — esta feature no reemplaza nada existente
 
 ## Observaciones
 <vacío si aprobado, o lista de problemas concretos si rechazado>
