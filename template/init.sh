@@ -137,6 +137,31 @@ done < <(node -e "
    .forEach(x => console.log(x.name + '|' + x.status));
 ")
 
+# Verificar que STATUS.md refleja el conteo real de feature_list.json
+STATUS_SYNC=$(node -e "
+  const fs = require('fs');
+  const f = require('./feature_list.json');
+  const done = f.filter(x => x.status === 'done').length;
+  const total = f.length;
+  const status = fs.readFileSync('STATUS.md', 'utf8');
+  const m = status.match(/Features completadas\*\*:\s*(\d+)\/(\d+)/);
+  if (!m) {
+    console.log('NO_MATCH');
+  } else if (Number(m[1]) !== done || Number(m[2]) !== total) {
+    console.log('MISMATCH:' + m[1] + '/' + m[2] + ' declarado vs ' + done + '/' + total + ' real');
+  } else {
+    console.log('OK');
+  }
+")
+
+if [ "$STATUS_SYNC" = "OK" ]; then
+  ok "STATUS.md sincronizado con feature_list.json"
+elif [ "$STATUS_SYNC" = "NO_MATCH" ]; then
+  warn "STATUS.md no tiene la línea 'Features completadas: X/Y' en el formato esperado"
+else
+  warn "STATUS.md desactualizado (${STATUS_SYNC#MISMATCH:}) — actualízalo antes de cerrar la sesión"
+fi
+
 # ── 5. BUILD ─────────────────────────────────
 echo ""
 echo "→ Build..."

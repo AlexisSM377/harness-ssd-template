@@ -117,9 +117,13 @@ Antes de terminar:
 1. Ejecuta `./init.sh` — todo debe terminar verde.
 2. Si la tarea está acabada: marca `status: "done"` en `feature_list.json` y
    confirma que `specs/<feature>/traceability.md` no tiene filas "pendiente".
-3. Mueve el resumen de `progress/current.md` al final de `progress/history.md`.
-4. Vacía `progress/current.md` dejando solo la plantilla base.
-5. No dejes archivos temporales, ni `console.log` de debug, ni TODOs sin contexto.
+3. Actualiza `STATUS.md`: la línea "Features completadas: X/Y" contra el
+   conteo real de `feature_list.json`, la sección "Estado actual", y añade
+   una entrada en "Última sesión" con fecha, qué se hizo y qué sigue. Esto
+   no es opcional ni se pospone — `init.sh` lo verifica en el siguiente paso.
+4. Mueve el resumen de `progress/current.md` al final de `progress/history.md`.
+5. Vacía `progress/current.md` dejando solo la plantilla base.
+6. No dejes archivos temporales, ni `console.log` de debug, ni TODOs sin contexto.
 
 ---
 
