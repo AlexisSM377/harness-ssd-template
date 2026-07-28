@@ -51,7 +51,7 @@ Próximos pasos tras aplicar la plantilla (el script los imprime al terminar):
 2. Rellenar `docs/conventions.md`.
 3. Ejecutar `./init.sh` dentro del proyecto destino.
 4. Añadir features a `feature_list.json`.
-5. Añadir `.obsidian/` al `.gitignore` del proyecto destino.
+5. Revisa `.gitignore` (ya incluye `.obsidian/`) y añade lo específico de tu stack (`node_modules/`, `dist/`, etc.).
 
 ---
 

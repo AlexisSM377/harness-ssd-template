@@ -1,0 +1,6 @@
+# Obsidian local config (this repo is Obsidian-vault-compatible; see docs/obsidian.md)
+.obsidian/
+
+# OS noise
+.DS_Store
+Thumbs.db

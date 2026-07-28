@@ -68,4 +68,4 @@ echo "  1) Edita $DEST_DIR/init.config.sh con las herramientas y comandos reales
 echo "  2) Rellena $DEST_DIR/docs/conventions.md"
 echo "  3) Ejecuta ./init.sh dentro de $DEST_DIR"
 echo "  4) Añade features a $DEST_DIR/feature_list.json"
-echo "  5) Añade .obsidian/ al .gitignore del proyecto destino"
+echo "  5) Revisa .gitignore (ya incluye .obsidian/) y añade lo especifico de tu stack"

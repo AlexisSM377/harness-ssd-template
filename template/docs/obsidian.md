@@ -29,8 +29,9 @@
 - **No se requiere ningún plugin.** Todo lo anterior funciona con Obsidian
   vanilla.
 
-Añade `.obsidian/` a `.gitignore` del proyecto destino tras la primera
-apertura, para no versionar configuración local de un editor.
+`.obsidian/` ya está en el `.gitignore` que trae la plantilla — no hace falta
+añadirlo a mano. Si tu proyecto ya tenía un `.gitignore` propio antes de
+aplicar la plantilla, confirma que la línea sigue ahí tras el merge.
 
 ---
 
