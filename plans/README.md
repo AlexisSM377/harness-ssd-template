@@ -18,10 +18,10 @@ subagents — repo is small enough for a direct pass).
 | 004  | Require new env vars documented in the same commit that introduces them | P2 | S | — | DONE (merged to `main`, commit `fe33ead`) |
 | 005  | Add a TYPECHECK_CMD slot to init.config.sh / init.sh | P2 | S | — | DONE (merged to `main`, merge commit `4e38b67`) |
 | 006  | Tell skill installers to gitignore local state/cache dirs | P3 | S | — | DONE (merged to `main`, merge commit `63ef40a`) |
-| 007  | Document feature_list.json's schema with a worked example | P1 | S | — | DONE (worktree `worktree-agent-a7503fd4671ce0cb2`, branch `advisor/007-feature-list-schema`, commit `347ec75` — not merged, awaiting operator merge) |
-| 008  | Make apply-template.sh's placeholder substitution portable across GNU/BSD sed | P1 | S | — | DONE (worktree `worktree-agent-abf0650b1ffc432be`, branch `advisor/008-sed-macos-portability`, commit `e9c99c5` — not merged; GNU-sed path verified end-to-end, BSD-sed `-i ''` path structurally correct but not executed, no BSD sed available to test with) |
-| 009  | Ship a seeded .gitignore instead of only instructing users to create one | P2 | S | — | DONE (worktree `worktree-agent-a897f0bdef69a70b6`, branch `advisor/009-ship-gitignore-seed`, commit `145ee6d` — not merged; minor cosmetic nit: README/apply-template.sh item 5 now imperative "Revisa/añade" vs items 1-4's infinitive "Editar/Rellenar/Añadir" — pre-existing in the plan's prescribed text, not a functional issue, optional polish) |
-| 010  | Close the gap between init.sh's harness-coherence check and CHECKPOINTS.md's C1 list | P2 | S | — | DONE (worktree `worktree-agent-a80ca955f362cf128`, branch `advisor/010-init-sh-c1-coverage`, commit `b666f50` — not merged; positive and negative smoke tests both re-verified independently) |
+| 007  | Document feature_list.json's schema with a worked example | P1 | S | — | DONE (merged to `main`, commit `347ec75`, merge `d5579fb`) |
+| 008  | Make apply-template.sh's placeholder substitution portable across GNU/BSD sed | P1 | S | — | DONE (merged to `main`, commit `e9c99c5` — GNU-sed path verified end-to-end; BSD-sed `-i ''` path structurally correct but not executed, no BSD sed available to test with) |
+| 009  | Ship a seeded .gitignore instead of only instructing users to create one | P2 | S | — | DONE (merged to `main`, commit `145ee6d` — minor cosmetic nit: README/apply-template.sh item 5 now imperative "Revisa/añade" vs items 1-4's infinitive "Editar/Rellenar/Añadir", pre-existing in the plan's prescribed text, not functional) |
+| 010  | Close the gap between init.sh's harness-coherence check and CHECKPOINTS.md's C1 list | P2 | S | — | DONE (merged to `main`, commit `b666f50` — positive and negative smoke tests both re-verified independently, and re-confirmed again post-merge via full apply-template.sh + init.sh integration smoke test) |
 
 ## Dependency notes
 
