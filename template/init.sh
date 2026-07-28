@@ -191,6 +191,15 @@ else
   warn "LINT_CMD vacío en init.config.sh — se salta lint"
 fi
 
+if [ -n "$TYPECHECK_CMD" ]; then
+  echo ""
+  echo "→ Typecheck..."
+  eval "$TYPECHECK_CMD" 2>&1
+  ok "Typecheck sin errores"
+else
+  warn "TYPECHECK_CMD vacío en init.config.sh — se salta typecheck"
+fi
+
 # ── 7. RESUMEN ───────────────────────────────
 echo ""
 echo "══════════════════════════════════════════"
