@@ -50,8 +50,13 @@ if [ "${#COPIED_FILES[@]}" -gt 0 ]; then
   # Escapar caracteres especiales de sed en el valor de reemplazo
   PROJECT_NAME_ESC=$(printf '%s' "$PROJECT_NAME" | sed -e 's/[\/&]/\\&/g')
   STACK_ESC=$(printf '%s' "$STACK" | sed -e 's/[\/&]/\\&/g')
+  if sed --version >/dev/null 2>&1; then
+    SED_INPLACE=(-i)
+  else
+    SED_INPLACE=(-i '')
+  fi
   for f in "${COPIED_FILES[@]}"; do
-    sed -i "s/{{PROJECT_NAME}}/${PROJECT_NAME_ESC}/g; s/{{STACK}}/${STACK_ESC}/g" "$f"
+    sed "${SED_INPLACE[@]}" "s/{{PROJECT_NAME}}/${PROJECT_NAME_ESC}/g; s/{{STACK}}/${STACK_ESC}/g" "$f"
   done
 else
   echo ""
