@@ -50,3 +50,17 @@ proyecto:
    ---
    ```
 3. Verifica que quedó a un solo nivel: `find .claude/skills -mindepth 2 -name SKILL.md` debe salir vacío.
+
+## Si la skill genera estado o cache local
+
+Algunas skills crean su propia carpeta de estado o cache en la raíz del
+proyecto para guardar configuración, logs, o resultados intermedios (por
+ejemplo, una skill de diseño de UI que guarda un historial de revisiones).
+Esa carpeta es tooling local, no contenido del proyecto:
+
+1. Al instalar una skill así, añade su carpeta a `.gitignore` **en el mismo
+   commit** que instala la skill — no lo dejes para después.
+2. Si ya se commiteó por accidente: `git rm -r --cached <carpeta>`, añádela
+   a `.gitignore`, commitea ambos cambios juntos.
+3. Si no estás seguro de si una skill genera este tipo de carpeta, revisa su
+   `SKILL.md` o su documentación antes de la primera vez que la uses.
