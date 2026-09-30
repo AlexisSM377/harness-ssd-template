@@ -75,7 +75,7 @@ run_gate in_progress ||
   fail "una feature in_progress aprobada fue rechazada"
 
 write_complete_traceability
-run_gate done ||
+run_gate "done" ||
   fail "una feature done con trazabilidad completa fue rechazada"
 
 sed 's/status: approved/status: draft/' \
@@ -101,12 +101,12 @@ write_complete_traceability
 sed 's/tests\/example.test::R2/pendiente/' \
   "$FEATURE_DIR/traceability.md" >"$FEATURE_DIR/traceability.tmp"
 mv "$FEATURE_DIR/traceability.tmp" "$FEATURE_DIR/traceability.md"
-expect_rejection done 'filas incompletas'
+expect_rejection "done" 'filas incompletas'
 
 write_complete_traceability
 sed '/| R2 |/d' \
   "$FEATURE_DIR/traceability.md" >"$FEATURE_DIR/traceability.tmp"
 mv "$FEATURE_DIR/traceability.tmp" "$FEATURE_DIR/traceability.md"
-expect_rejection done 'exactamente una fila'
+expect_rejection "done" 'exactamente una fila'
 
 printf 'PASS: gates de aprobación humana y trazabilidad verificados\n'
