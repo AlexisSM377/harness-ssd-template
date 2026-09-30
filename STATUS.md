@@ -20,9 +20,9 @@ componentes y `apply-template.sh` para instalarla en un proyecto destino.
 ./apply-template.sh <dir-proyecto-destino> <nombre-proyecto> [stack]
 ```
 
-Este repo en sí no tiene build/test — es documentación + shell scripts.
-`template/init.sh` es el `init.sh` que se copia al proyecto destino, no algo
-que se corre aquí.
+Este repo no tiene build — es documentación + shell scripts. Sus pruebas de
+regresión se ejecutan con `bash tests/run.sh`. `template/init.sh` es el
+`init.sh` que se copia al proyecto destino, no algo que se corre aquí.
 
 ---
 
@@ -37,6 +37,19 @@ que se corre aquí.
   se anida por categoría: `plans/001-flat-skills-taxonomy.md`.
 - `template/.gitignore` — **nuevo**, seed con `.obsidian/` + ruido de OS.
   Antes no existía ninguno (plan 009).
+- `tests/` — pruebas de regresión del propio template; comprueban, entre otras
+  cosas, que las referencias al rango de checkpoints no diverjan de
+  `template/CHECKPOINTS.md`.
+- `.github/workflows/ci.yml` — CI en Ubuntu y macOS para cubrir GNU/BSD `sed`;
+  ejecuta validación sintáctica, las pruebas de regresión y ShellCheck.
+- `template/scripts/feature-list-query` — validación y consultas de
+  `feature_list.json` con autodetección de `node` o `python3`; el arnés ya no
+  impone Node como herramienta del stack destino.
+- `template/scripts/validate-feature-gates` — convierte en comprobaciones
+  ejecutables la aprobación humana de specs y la trazabilidad completa de toda
+  feature marcada `done`; `spec_ready` e `in_progress` también exigen aprobación.
+- `template/init.sh` trata la divergencia entre `STATUS.md` y
+  `feature_list.json` como error bloqueante, no como aviso.
 - `plans/` — usado por el skill `/improve` para planes de mejora de este
   mismo repo (plantilla). Planes 001-010 ejecutados y mergeados a `main`.
 

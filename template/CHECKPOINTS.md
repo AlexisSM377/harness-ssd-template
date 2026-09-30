@@ -57,7 +57,7 @@
 ## C6 — Specs: toda feature done tiene spec aprobada
 
 - [ ] `specs/<feature>/requirements.md` existe con `status: approved` en el frontmatter
-- [ ] La casilla "Aprobado por humano" está marcada con fecha
+- [ ] La casilla "Aprobado por humano" está marcada con fecha `YYYY-MM-DD`
 - [ ] Ningún requisito fue modificado después de la aprobación sin pasar de nuevo por el gate
 
 ---

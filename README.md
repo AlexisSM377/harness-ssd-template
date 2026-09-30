@@ -63,7 +63,7 @@ pending ──────────► spec_ready ─────────
    │  spec_author       │  GATE HUMANO          │  implementer       │  reviewer
    │  escribe            │  aprueba requirements  │  TDD por R-id      │  valida
    │  requirements.md    │  .md (obligatorio)     │  actualiza          │  CHECKPOINTS
-   │                    │                       │  traceability.md   │  C1..C6
+   │                    │                       │  traceability.md   │  C1..C7
 ```
 
 - Ningún agente se auto-aprueba una spec: el humano marca la casilla
@@ -75,6 +75,28 @@ pending ──────────► spec_ready ─────────
   `traceability.md`, si algún test no nombra su R-id, o si `init.sh` falla.
 
 Detalle completo del proceso: `template/docs/specs.md`.
+
+---
+
+## Verificación de la plantilla
+
+Este repositorio incluye comprobaciones de regresión para mantener coherentes
+los documentos y archivos que se copian al proyecto destino:
+
+```bash
+bash tests/run.sh
+```
+
+Las pruebas no requieren dependencias externas aparte de Bash y las
+herramientas POSIX utilizadas por los propios scripts.
+
+GitHub Actions ejecuta esta suite y valida la sintaxis y el lint de los scripts
+en Linux con GNU `sed` y macOS con BSD `sed`. La workflow también puede lanzarse
+manualmente desde la pestaña Actions.
+
+Además de probar el instalador, la suite verifica que `init.sh` haga cumplir los
+gates de aprobación humana y trazabilidad definidos por el ciclo SDD, así como
+la sincronización entre `STATUS.md` y `feature_list.json`.
 
 ---
 
@@ -133,8 +155,9 @@ Añade las skills reales del proyecto siguiendo ese patrón.
 
 - **Stack-agnóstico**: la plantilla no asume ningún framework. Los comandos
   de build/test/lint/instalación viven en `init.config.sh`, editado por
-  proyecto. El ejemplo NestJS de `docs/architecture.md` es solo un apéndice
-  ilustrativo.
+  proyecto. Para validar `feature_list.json`, el harness usa automáticamente
+  `node` o `python3`, sin imponer uno como parte del stack de la aplicación. El
+  ejemplo NestJS de `docs/architecture.md` es solo un apéndice ilustrativo.
 - **El estado vive en disco, no en el chat**: `feature_list.json`,
   `progress/`, `specs/` — nunca en la memoria de una conversación.
 - **Anti-teléfono-descompuesto**: los subagentes escriben su resultado en un
