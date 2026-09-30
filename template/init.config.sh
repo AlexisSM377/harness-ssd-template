@@ -3,9 +3,9 @@
 
 PROJECT_NAME="{{PROJECT_NAME}}"
 
-# Binarios que deben existir en PATH
-# node es necesario para las verificaciones de feature_list.json en init.sh
-REQUIRED_TOOLS=("node")
+# Binarios del stack que deben existir en PATH. El harness detecta
+# automáticamente node o python3 para validar feature_list.json.
+REQUIRED_TOOLS=()
 
 # Variables de entorno críticas, ej: ("DATABASE_URL" "JWT_SECRET")
 REQUIRED_ENV_VARS=()

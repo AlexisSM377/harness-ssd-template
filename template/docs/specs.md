@@ -27,11 +27,12 @@ pending → spec_ready → in_progress → done
 2. **`spec_ready`**: `spec_author` copió `specs/_template/` a
    `specs/<feature>/`, escribió requisitos EARS concretos y medibles en
    `requirements.md`, y un **humano marcó la casilla de aprobación**. Sin esa
-   marca, ningún agente puede pasar la feature a `in_progress`.
+   marca, la feature no puede estar en `spec_ready` ni pasar a `in_progress`;
+   `init.sh` rechaza ambos estados si la aprobación no es válida.
 3. **`in_progress`**: `implementer` trabaja siguiendo `specs/<feature>/tasks.md`
    (test rojo → verde → refactor por cada requisito), actualizando
    `traceability.md` tras cada commit.
-4. **`done`**: `reviewer` valida contra `CHECKPOINTS.md` (C1–C6), en
+4. **`done`**: `reviewer` valida contra `CHECKPOINTS.md` (C1–C7), en
    particular que `traceability.md` no tiene filas "pendiente" y que los
    tests nombran sus R-ids.
 
@@ -70,9 +71,11 @@ Ejemplo:
 }
 ```
 
-Solo `id`, `name` y `status` son leídos por `init.sh`. El resto es contexto
-opcional para `spec_author` — vale la pena rellenarlo cuando ya se sabe, pero
-no bloquea nada si falta.
+`init.sh` valida `id`, `name` y `status`, y usa `priority` al mostrar la próxima
+feature. El resto es contexto opcional para `spec_author` — vale la pena
+rellenarlo cuando ya se sabe, pero no bloquea nada si falta. Para procesar JSON,
+el harness detecta automáticamente `node` o `python3`; no obliga a que el stack
+de la aplicación use uno de ellos en particular.
 
 ---
 
@@ -84,7 +87,8 @@ no bloquea nada si falta.
 3. Escribe requirements.md: requisitos R1..Rn en notación EARS,
    concretos y verificables (no vagos)
 4. Cambia status de la feature a "spec_ready" en feature_list.json
-5. PARA — espera aprobación humana (marca en requirements.md)
+5. PARA — espera aprobación humana (marca la casilla en requirements.md y
+   registra la fecha en formato `YYYY-MM-DD`)
 6. Solo tras la aprobación, el leader puede lanzar implementer
 ```
 

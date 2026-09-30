@@ -85,6 +85,8 @@ echo "→ Verificando coherencia del harness..."
 [ -f STATUS.md ]             || fail "STATUS.md no encontrado"
 [ -f feature_list.json ]     || fail "feature_list.json no encontrado"
 [ -f init.config.sh ]        || fail "init.config.sh no encontrado"
+[ -f scripts/feature-list-query ] || fail "scripts/feature-list-query no encontrado"
+[ -f scripts/validate-feature-gates ] || fail "scripts/validate-feature-gates no encontrado"
 [ -f progress/current.md ]   || fail "progress/current.md no encontrado"
 [ -d specs ]                 || fail "specs/ no encontrado"
 [ -d specs/_template ]       || fail "specs/_template/ no encontrado"
@@ -103,70 +105,51 @@ for agent in leader spec_author explorer implementer reviewer; do
 done
 ok "Archivos del harness presentes"
 
+# Validar schema y seleccionar automáticamente node o python3 como runtime JSON
+FEATURE_QUERY=(bash scripts/feature-list-query)
+"${FEATURE_QUERY[@]}" validate ||
+  fail "feature_list.json no cumple el schema documentado en docs/specs.md"
+ok "feature_list.json válido"
+
 # Verificar máximo 1 feature in_progress
-IN_PROGRESS=$(node -e "
-  try {
-    const f = require('./feature_list.json');
-    console.log(f.filter(x => x.status === 'in_progress').length);
-  } catch(e) {
-    console.log('ERROR: ' + e.message);
-    process.exit(1);
-  }
-")
+IN_PROGRESS=$("${FEATURE_QUERY[@]}" count in_progress)
 
 if [ "$IN_PROGRESS" = "0" ]; then
   ok "Sin features en progreso (sesión limpia)"
 elif [ "$IN_PROGRESS" = "1" ]; then
-  FEATURE_NAME=$(node -e "
-    const f = require('./feature_list.json');
-    const ip = f.find(x => x.status === 'in_progress');
-    console.log(ip ? ip.name : 'unknown');
-  ")
+  FEATURE_NAME=$("${FEATURE_QUERY[@]}" first in_progress name)
   warn "Feature en progreso: ${FEATURE_NAME}"
 else
   fail "Más de 1 feature en in_progress (${IN_PROGRESS}). Resolver antes de continuar."
 fi
 
-# Verificar que toda feature in_progress/done tiene spec (requirements.md)
+# Verificar aprobación de specs listas/activas y trazabilidad de las completadas
 while IFS='|' read -r name status; do
   [ -z "$name" ] && continue
-  spec_file="specs/${name}/requirements.md"
-  if [ ! -f "$spec_file" ]; then
-    if [ "$status" = "in_progress" ]; then
-      fail "Feature '${name}' está in_progress pero falta ${spec_file}"
-    else
-      warn "Feature '${name}' (done) sin ${spec_file} — probablemente anterior a la adopción de specs"
-    fi
-  fi
-done < <(node -e "
-  const f = require('./feature_list.json');
-  f.filter(x => x.status === 'in_progress' || x.status === 'done')
-   .forEach(x => console.log(x.name + '|' + x.status));
-")
+  bash scripts/validate-feature-gates "$name" "$status" ||
+    fail "Feature '${name}' no supera los gates de aprobación/trazabilidad"
+  ok "Feature '${name}' supera los gates para ${status}"
+done < <("${FEATURE_QUERY[@]}" active)
 
 # Verificar que STATUS.md refleja el conteo real de feature_list.json
-STATUS_SYNC=$(node -e "
-  const fs = require('fs');
-  const f = require('./feature_list.json');
-  const done = f.filter(x => x.status === 'done').length;
-  const total = f.length;
-  const status = fs.readFileSync('STATUS.md', 'utf8');
-  const m = status.match(/Features completadas\*\*:\s*(\d+)\/(\d+)/);
-  if (!m) {
-    console.log('NO_MATCH');
-  } else if (Number(m[1]) !== done || Number(m[2]) !== total) {
-    console.log('MISMATCH:' + m[1] + '/' + m[2] + ' declarado vs ' + done + '/' + total + ' real');
-  } else {
-    console.log('OK');
-  }
-")
+DONE_COUNT=$("${FEATURE_QUERY[@]}" count done)
+TOTAL=$("${FEATURE_QUERY[@]}" count all)
+DECLARED_COUNTS=$(sed -n 's/.*Features completadas\*\*:[[:space:]]*\([0-9][0-9]*\)\/\([0-9][0-9]*\).*/\1\/\2/p' STATUS.md)
+
+if [ -z "$DECLARED_COUNTS" ]; then
+  STATUS_SYNC="NO_MATCH"
+elif [ "$DECLARED_COUNTS" = "${DONE_COUNT}/${TOTAL}" ]; then
+  STATUS_SYNC="OK"
+else
+  STATUS_SYNC="MISMATCH:${DECLARED_COUNTS} declarado vs ${DONE_COUNT}/${TOTAL} real"
+fi
 
 if [ "$STATUS_SYNC" = "OK" ]; then
   ok "STATUS.md sincronizado con feature_list.json"
 elif [ "$STATUS_SYNC" = "NO_MATCH" ]; then
-  warn "STATUS.md no tiene la línea 'Features completadas: X/Y' en el formato esperado"
+  fail "STATUS.md no tiene la línea 'Features completadas: X/Y' en el formato esperado"
 else
-  warn "STATUS.md desactualizado (${STATUS_SYNC#MISMATCH:}) — actualízalo antes de cerrar la sesión"
+  fail "STATUS.md desactualizado (${STATUS_SYNC#MISMATCH:})"
 fi
 
 # ── 5. BUILD ─────────────────────────────────
@@ -211,18 +194,7 @@ fi
 echo ""
 echo "══════════════════════════════════════════"
 
-PENDING_COUNT=$(node -e "
-  const f = require('./feature_list.json');
-  console.log(f.filter(x => x.status === 'pending').length);
-")
-DONE_COUNT=$(node -e "
-  const f = require('./feature_list.json');
-  console.log(f.filter(x => x.status === 'done').length);
-")
-TOTAL=$(node -e "
-  const f = require('./feature_list.json');
-  console.log(f.length);
-")
+PENDING_COUNT=$("${FEATURE_QUERY[@]}" count pending)
 
 echo -e "${GREEN}✅ Todo verde. Listo para trabajar.${NC}"
 echo ""
@@ -231,11 +203,10 @@ echo ""
 
 if [ "$PENDING_COUNT" -gt 0 ]; then
   echo "  Próxima feature:"
-  node -e "
-    const f = require('./feature_list.json');
-    const next = f.find(x => x.status === 'pending');
-    if (next) console.log('  [#' + next.id + '] ' + next.name + ' (' + next.priority + ')');
-  "
+  NEXT_ID=$("${FEATURE_QUERY[@]}" first pending id)
+  NEXT_NAME=$("${FEATURE_QUERY[@]}" first pending name)
+  NEXT_PRIORITY=$("${FEATURE_QUERY[@]}" first pending priority)
+  echo "  [#${NEXT_ID}] ${NEXT_NAME} (${NEXT_PRIORITY:-sin prioridad})"
 fi
 
 echo ""

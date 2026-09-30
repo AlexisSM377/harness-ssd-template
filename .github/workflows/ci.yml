@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check Bash syntax
+        shell: bash
+        run: bash -n apply-template.sh template/*.sh template/scripts/* tests/*.sh
+
+      - name: Run regression tests
+        shell: bash
+        run: bash tests/run.sh
+
+      - name: Install ShellCheck when missing
+        shell: bash
+        run: |
+          if command -v shellcheck >/dev/null 2>&1; then
+            exit 0
+          fi
+
+          case "$RUNNER_OS" in
+            Linux)
+              sudo apt-get update
+              sudo apt-get install --yes shellcheck
+              ;;
+            macOS)
+              brew install shellcheck
+              ;;
+            *)
+              printf 'Sistema no soportado para instalar ShellCheck: %s\n' "$RUNNER_OS" >&2
+              exit 1
+              ;;
+          esac
+
+      - name: Lint maintained shell scripts
+        shell: bash
+        run: shellcheck --severity=warning apply-template.sh template/scripts/* tests/*.sh

@@ -43,7 +43,7 @@ duplica.
 | `docs/verification.md` | Cómo verificar que una feature funciona correctamente + disciplina TDD | Antes de declarar done |
 | `docs/specs.md` | El proceso SDD completo: estados, gates, cuándo se escribe cada spec | Antes de escribir o aprobar una spec |
 | `docs/obsidian.md` | Cómo usar este proyecto como vault de Obsidian | Si usas Obsidian para navegar el proyecto |
-| `CHECKPOINTS.md` | Criterios objetivos de "estado final correcto" (C1..C6) | Para auto-evaluarte |
+| `CHECKPOINTS.md` | Criterios objetivos de "estado final correcto" (C1..C7) | Para auto-evaluarte |
 | `.claude/agents/` | Definiciones de subagentes (leader, spec_author, explorer, implementer, reviewer) | Si orquestas trabajo |
 | `.claude/skills/` | Skills reutilizables, un nivel plano (`<track>-<nombre>/SKILL.md`) — ver `.claude/skills/README.md` | Antes de repetir una tarea ya resuelta en otro proyecto |
 | `init.config.sh` | Comandos de build/test/lint específicos de este proyecto | Antes de correr `init.sh` por primera vez |

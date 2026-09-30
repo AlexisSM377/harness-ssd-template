@@ -22,4 +22,4 @@ tags: [harness, spec]
 
 ## Aprobación
 
-- [ ] Aprobado por humano (fecha: ____) ← gate obligatorio antes de implementar
+- [ ] Aprobado por humano (fecha: ____-__-__) ← usar YYYY-MM-DD; gate obligatorio antes de implementar

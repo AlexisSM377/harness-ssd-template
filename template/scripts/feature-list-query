@@ -1,0 +1,210 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+operation="${1:-}"
+shift || true
+
+if [ -z "$operation" ]; then
+  printf 'Uso: %s <validate|count|first|active> [argumentos]\n' "$0" >&2
+  exit 2
+fi
+
+runtime="${HARNESS_JSON_RUNTIME:-}"
+if [ -z "$runtime" ]; then
+  if command -v node >/dev/null 2>&1; then
+    runtime="node"
+  elif command -v python3 >/dev/null 2>&1; then
+    runtime="python3"
+  else
+    printf 'Se necesita node o python3 para validar feature_list.json\n' >&2
+    exit 1
+  fi
+fi
+
+case "$runtime" in
+  node)
+    command -v node >/dev/null 2>&1 || {
+      printf 'HARNESS_JSON_RUNTIME=node, pero node no está disponible\n' >&2
+      exit 1
+    }
+    node - "$operation" "$@" <<'JS'
+const fs = require('fs');
+
+const operation = process.argv[2];
+const args = process.argv.slice(3);
+const allowedStatuses = new Set(['pending', 'spec_ready', 'in_progress', 'done']);
+
+function fail(message) {
+  console.error(`feature_list.json inválido: ${message}`);
+  process.exit(1);
+}
+
+let features;
+try {
+  features = JSON.parse(fs.readFileSync('feature_list.json', 'utf8'));
+} catch (error) {
+  fail(error.message);
+}
+
+if (!Array.isArray(features)) fail('la raíz debe ser un array');
+
+const ids = new Set();
+const names = new Set();
+features.forEach((feature, index) => {
+  const label = `entrada ${index + 1}`;
+  if (!feature || typeof feature !== 'object' || Array.isArray(feature)) {
+    fail(`${label} debe ser un objeto`);
+  }
+  if (typeof feature.id !== 'number' || !Number.isFinite(feature.id)) {
+    fail(`${label}.id debe ser un número`);
+  }
+  if (ids.has(feature.id)) fail(`id duplicado: ${feature.id}`);
+  ids.add(feature.id);
+  if (typeof feature.name !== 'string' || feature.name.length === 0) {
+    fail(`${label}.name debe ser un string no vacío`);
+  }
+  if (/[|\r\n]/.test(feature.name)) {
+    fail(`${label}.name no puede contener "|", CR o LF`);
+  }
+  if (names.has(feature.name)) fail(`name duplicado: ${feature.name}`);
+  names.add(feature.name);
+  if (!allowedStatuses.has(feature.status)) {
+    fail(`${label}.status no es válido: ${String(feature.status)}`);
+  }
+  for (const field of ['priority', 'description']) {
+    if (feature[field] !== undefined && typeof feature[field] !== 'string') {
+      fail(`${label}.${field} debe ser un string`);
+    }
+  }
+  for (const field of ['acceptance_criteria', 'files_affected']) {
+    if (
+      feature[field] !== undefined
+      && (!Array.isArray(feature[field])
+        || feature[field].some(item => typeof item !== 'string'))
+    ) {
+      fail(`${label}.${field} debe ser un array de strings`);
+    }
+  }
+});
+
+switch (operation) {
+  case 'validate':
+    break;
+  case 'count': {
+    const status = args[0];
+    console.log(status === 'all'
+      ? features.length
+      : features.filter(feature => feature.status === status).length);
+    break;
+  }
+  case 'first': {
+    const [status, field] = args;
+    const feature = features.find(item => item.status === status);
+    if (feature && feature[field] !== undefined) console.log(String(feature[field]));
+    break;
+  }
+  case 'active':
+    features
+      .filter(feature => (
+        feature.status === 'spec_ready'
+        || feature.status === 'in_progress'
+        || feature.status === 'done'
+      ))
+      .forEach(feature => console.log(`${feature.name}|${feature.status}`));
+    break;
+  default:
+    fail(`operación desconocida: ${operation}`);
+}
+JS
+    ;;
+  python3)
+    command -v python3 >/dev/null 2>&1 || {
+      printf 'HARNESS_JSON_RUNTIME=python3, pero python3 no está disponible\n' >&2
+      exit 1
+    }
+    python3 - "$operation" "$@" <<'PY'
+import json
+import math
+import sys
+
+operation = sys.argv[1]
+args = sys.argv[2:]
+allowed_statuses = {"pending", "spec_ready", "in_progress", "done"}
+
+
+def fail(message):
+    print(f"feature_list.json inválido: {message}", file=sys.stderr)
+    raise SystemExit(1)
+
+
+try:
+    with open("feature_list.json", encoding="utf-8") as feature_file:
+        features = json.load(feature_file)
+except (OSError, json.JSONDecodeError) as error:
+    fail(str(error))
+
+if not isinstance(features, list):
+    fail("la raíz debe ser un array")
+
+ids = set()
+names = set()
+for index, feature in enumerate(features, start=1):
+    label = f"entrada {index}"
+    if not isinstance(feature, dict):
+        fail(f"{label} debe ser un objeto")
+    feature_id = feature.get("id")
+    if (
+        not isinstance(feature_id, (int, float))
+        or isinstance(feature_id, bool)
+        or not math.isfinite(feature_id)
+    ):
+        fail(f"{label}.id debe ser un número")
+    if feature_id in ids:
+        fail(f"id duplicado: {feature_id}")
+    ids.add(feature_id)
+    name = feature.get("name")
+    if not isinstance(name, str) or not name:
+        fail(f"{label}.name debe ser un string no vacío")
+    if any(character in name for character in "|\r\n"):
+        fail(f'{label}.name no puede contener "|", CR o LF')
+    if name in names:
+        fail(f"name duplicado: {name}")
+    names.add(name)
+    status = feature.get("status")
+    if status not in allowed_statuses:
+        fail(f"{label}.status no es válido: {status}")
+    for field in ("priority", "description"):
+        if field in feature and not isinstance(feature[field], str):
+            fail(f"{label}.{field} debe ser un string")
+    for field in ("acceptance_criteria", "files_affected"):
+        if field in feature and (
+            not isinstance(feature[field], list)
+            or not all(isinstance(item, str) for item in feature[field])
+        ):
+            fail(f"{label}.{field} debe ser un array de strings")
+
+if operation == "validate":
+    pass
+elif operation == "count":
+    status = args[0]
+    print(len(features) if status == "all" else sum(
+        feature["status"] == status for feature in features
+    ))
+elif operation == "first":
+    status, field = args
+    feature = next((item for item in features if item["status"] == status), None)
+    if feature is not None and field in feature:
+        print(feature[field])
+elif operation == "active":
+    for feature in features:
+        if feature["status"] in {"spec_ready", "in_progress", "done"}:
+            print(f'{feature["name"]}|{feature["status"]}')
+else:
+    fail(f"operación desconocida: {operation}")
+PY
+    ;;
+  *)
+    printf 'HARNESS_JSON_RUNTIME debe ser node o python3, no "%s"\n' "$runtime" >&2
+    exit 2
+    ;;
+esac
